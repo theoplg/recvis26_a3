@@ -1,0 +1,24 @@
+device=cuda model=resnet18 image_size=32 data=data
+epoch 01: train_acc=0.4960, val_acc=0.5081
+epoch 02: train_acc=0.6694, val_acc=0.6809
+epoch 03: train_acc=0.7395, val_acc=0.7102
+epoch 04: train_acc=0.7820, val_acc=0.7584
+epoch 05: train_acc=0.8088, val_acc=0.8035
+epoch 06: train_acc=0.8306, val_acc=0.8068
+epoch 07: train_acc=0.8453, val_acc=0.8310
+epoch 08: train_acc=0.8604, val_acc=0.8310
+epoch 09: train_acc=0.8696, val_acc=0.8379
+epoch 10: train_acc=0.8802, val_acc=0.8641
+epoch 11: train_acc=0.8893, val_acc=0.8428
+epoch 12: train_acc=0.8976, val_acc=0.8577
+epoch 13: train_acc=0.9055, val_acc=0.8717
+epoch 14: train_acc=0.9100, val_acc=0.8697
+epoch 15: train_acc=0.9165, val_acc=0.8536
+epoch 16: train_acc=0.9220, val_acc=0.8545
+epoch 17: train_acc=0.9258, val_acc=0.8694
+epoch 18: train_acc=0.9303, val_acc=0.8842
+epoch 19: train_acc=0.9346, val_acc=0.8725
+epoch 20: train_acc=0.9371, val_acc=0.8836
+saved runs/baseline_r18/model.pth
+saved runs/baseline_r18/history.csv
+saved runs/baseline_r18/submission.csv
