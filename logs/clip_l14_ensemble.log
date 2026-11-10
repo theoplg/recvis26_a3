@@ -1,0 +1,16 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda model=ViT-L-14 pretrained=laion2b_s32b_b82k templates=18
+CIFAR-10 validation accuracy: 0.9699
+predicted class distribution on test:
+  airplane      4827  (9.5%)
+  automobile    4449  (8.7%)
+  bird          4933  (9.7%)
+  cat           5106  (10.0%)
+  deer          5090  (10.0%)
+  dog           5137  (10.1%)
+  frog          5049  (9.9%)
+  horse         5188  (10.2%)
+  ship          4981  (9.8%)
+  truck         6317  (12.4%)
+saved runs/clip_l14_ensemble/submission.csv
+saved runs/clip_l14_ensemble/test_logits.npy
