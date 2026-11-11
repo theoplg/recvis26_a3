@@ -1,0 +1,68 @@
+host=node17 job=1101420 start=Wed Nov 11 18:09:54 CET 2026
+Tesla P100-PCIE-16GB, 16384 MiB
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda model=ViT-bigG-14 pretrained=laion2b_s39b_b160k params=2.54B dtype=torch.float16 prompts=openai_imagenet templates=80
+  [val] batch 20/157  2.9 min
+  [val] batch 40/157  5.8 min
+  [val] batch 60/157  8.6 min
+  [val] batch 80/157  11.5 min
+  [val] batch 100/157  14.4 min
+  [val] batch 120/157  17.2 min
+  [val] batch 140/157  20.1 min
+  [val] batch 157/157  22.5 min
+CIFAR-10 validation accuracy: 0.9843
+  [test] batch 20/799  2.9 min
+  [test] batch 40/799  5.8 min
+  [test] batch 60/799  8.6 min
+  [test] batch 80/799  11.5 min
+  [test] batch 100/799  14.4 min
+  [test] batch 120/799  17.2 min
+  [test] batch 140/799  20.1 min
+  [test] batch 160/799  23.0 min
+  [test] batch 180/799  25.9 min
+  [test] batch 200/799  28.7 min
+  [test] batch 220/799  31.6 min
+  [test] batch 240/799  34.5 min
+  [test] batch 260/799  37.4 min
+  [test] batch 280/799  40.2 min
+  [test] batch 300/799  43.1 min
+  [test] batch 320/799  46.0 min
+  [test] batch 340/799  48.8 min
+  [test] batch 360/799  51.7 min
+  [test] batch 380/799  54.6 min
+  [test] batch 400/799  57.5 min
+  [test] batch 420/799  60.3 min
+  [test] batch 440/799  63.2 min
+  [test] batch 460/799  66.1 min
+  [test] batch 480/799  68.9 min
+  [test] batch 500/799  71.8 min
+  [test] batch 520/799  74.7 min
+  [test] batch 540/799  77.6 min
+  [test] batch 560/799  80.4 min
+  [test] batch 580/799  83.3 min
+  [test] batch 600/799  86.2 min
+  [test] batch 620/799  89.1 min
+  [test] batch 640/799  91.9 min
+  [test] batch 660/799  94.8 min
+  [test] batch 680/799  97.7 min
+  [test] batch 700/799  100.5 min
+  [test] batch 720/799  103.4 min
+  [test] batch 740/799  106.3 min
+  [test] batch 760/799  109.2 min
+  [test] batch 780/799  112.0 min
+  [test] batch 799/799  114.6 min
+predicted class distribution on test:
+  airplane      4831  (9.5%)
+  automobile    4645  (9.1%)
+  bird          5167  (10.1%)
+  cat           4850  (9.5%)
+  deer          5093  (10.0%)
+  dog           5461  (10.7%)
+  frog          5055  (9.9%)
+  horse         5067  (9.9%)
+  ship          5000  (9.8%)
+  truck         5908  (11.6%)
+saved runs/clip_bigg_openai_imagenet/submission.csv
+saved runs/clip_bigg_openai_imagenet/test_logits.npy
+end=Wed Nov 11 20:28:47 CET 2026

@@ -1,0 +1,39 @@
+host=node16 job=1101402 start=Wed Nov 11 17:49:42 CET 2026
+Tesla P100-PCIE-16GB, 16384 MiB
+===== openai_cifar10 =====
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda model=ViT-B-32 pretrained=laion2b_s34b_b79k prompts=openai_cifar10 templates=18
+CIFAR-10 validation accuracy: 0.9356
+predicted class distribution on test:
+  airplane      4984  (9.8%)
+  automobile    4929  (9.7%)
+  bird          5070  (9.9%)
+  cat           4920  (9.6%)
+  deer          4953  (9.7%)
+  dog           5485  (10.7%)
+  frog          5370  (10.5%)
+  horse         4900  (9.6%)
+  ship          4909  (9.6%)
+  truck         5557  (10.9%)
+saved runs/clip_b32_openai_cifar10/submission.csv
+saved runs/clip_b32_openai_cifar10/test_logits.npy
+===== openai_imagenet =====
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda model=ViT-B-32 pretrained=laion2b_s34b_b79k prompts=openai_imagenet templates=80
+CIFAR-10 validation accuracy: 0.9357
+predicted class distribution on test:
+  airplane      4952  (9.7%)
+  automobile    4862  (9.5%)
+  bird          4930  (9.7%)
+  cat           4806  (9.4%)
+  deer          4991  (9.8%)
+  dog           5531  (10.8%)
+  frog          5193  (10.2%)
+  horse         4918  (9.6%)
+  ship          5432  (10.6%)
+  truck         5462  (10.7%)
+saved runs/clip_b32_openai_imagenet/submission.csv
+saved runs/clip_b32_openai_imagenet/test_logits.npy
+end=Wed Nov 11 17:54:03 CET 2026

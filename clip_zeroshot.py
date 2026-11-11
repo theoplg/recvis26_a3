@@ -12,6 +12,7 @@ Example:
 from __future__ import annotations
 
 import argparse
+import time
 from pathlib import Path
 
 import numpy as np
@@ -101,6 +102,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument(
+        "--fp16",
+        action="store_true",
+        help="Run the model in half precision (halves memory, ~2x faster). Recommended for ViT-H/g/bigG.",
+    )
     return parser.parse_args()
 
 
@@ -110,22 +116,26 @@ def build_classifier(model, tokenizer, templates, device) -> torch.Tensor:
     weights = []
     for name in CLASS_NAMES:
         tokens = tokenizer([t.format(name) for t in templates]).to(device)
-        emb = model.encode_text(tokens)
+        emb = model.encode_text(tokens).float()
         emb = emb / emb.norm(dim=-1, keepdim=True)
         emb = emb.mean(dim=0)
         weights.append(emb / emb.norm())
-    return torch.stack(weights, dim=1)  # (dim, 10)
+    return torch.stack(weights, dim=1)  # (dim, 10), float32
 
 
 @torch.inference_mode()
-def compute_logits(model, classifier, dataset, batch_size, workers, device):
+def compute_logits(model, classifier, dataset, batch_size, workers, device, dtype, name=""):
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=workers)
     all_logits, all_second = [], []
-    for images, second in loader:
-        feats = model.encode_image(images.to(device))
+    start, n_batches = time.time(), len(loader)
+    for step, (images, second) in enumerate(loader, 1):
+        feats = model.encode_image(images.to(device, dtype=dtype)).float()
         feats = feats / feats.norm(dim=-1, keepdim=True)
-        all_logits.append((100.0 * feats @ classifier).float().cpu())
+        all_logits.append((100.0 * feats @ classifier).cpu())
         all_second.append(second)
+        if step % 20 == 0 or step == n_batches:
+            elapsed = time.time() - start
+            print(f"  [{name}] batch {step}/{n_batches}  {elapsed / 60:.1f} min", flush=True)
     return torch.cat(all_logits).numpy(), torch.cat(all_second).numpy()
 
 
@@ -137,23 +147,31 @@ def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model, _, preprocess = open_clip.create_model_and_transforms(args.model, pretrained=args.pretrained)
-    model.to(device).eval()
+    dtype = torch.float16 if args.fp16 and device.type == "cuda" else torch.float32
+    model.to(device=device, dtype=dtype).eval()
     tokenizer = open_clip.get_tokenizer(args.model)
     templates = get_templates(args.prompts)
+    n_params = sum(p.numel() for p in model.parameters()) / 1e9
     print(
         f"device={device} model={args.model} pretrained={args.pretrained} "
-        f"prompts={args.prompts} templates={len(templates)}"
+        f"params={n_params:.2f}B dtype={dtype} prompts={args.prompts} templates={len(templates)}",
+        flush=True,
     )
 
     classifier = build_classifier(model, tokenizer, templates, device)
 
     val_set = NpzImageDataset(args.data / "validation.npz", transform=preprocess, require_labels=True)
-    val_logits, val_labels = compute_logits(model, classifier, val_set, args.batch_size, args.workers, device)
+    val_logits, val_labels = compute_logits(
+        model, classifier, val_set, args.batch_size, args.workers, device, dtype, "val"
+    )
     val_acc = float((val_logits.argmax(1) == val_labels).mean())
-    print(f"CIFAR-10 validation accuracy: {val_acc:.4f}")
+    print(f"CIFAR-10 validation accuracy: {val_acc:.4f}", flush=True)
+    np.save(args.output / "val_logits.npy", val_logits)
 
     test_set = NpzImageDataset(args.data / "test.npz", transform=preprocess, require_labels=False)
-    test_logits, test_ids = compute_logits(model, classifier, test_set, args.batch_size, args.workers, device)
+    test_logits, test_ids = compute_logits(
+        model, classifier, test_set, args.batch_size, args.workers, device, dtype, "test"
+    )
     predictions = test_logits.argmax(1)
 
     sample = pd.read_csv(args.data / "sample_submission.csv")
