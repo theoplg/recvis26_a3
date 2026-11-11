@@ -1,0 +1,56 @@
+host=node16 job=1101137 start=Wed Nov 11 13:44:04 CET 2026
+Tesla P100-PCIE-16GB, 16384 MiB
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/cuda/__init__.py:371: UserWarning: Found GPU0 Tesla P100-PCIE-16GB which is of compute capability (CC) 6.0.
+The following list shows the CCs this version of PyTorch was built for and the hardware CCs it supports:
+- 7.5 which supports hardware CC >=7.5,<8.0
+- 8.0 which supports hardware CC >=8.0,<9.0 except {8.7}
+- 8.6 which supports hardware CC >=8.6,<9.0 except {8.7}
+- 9.0 which supports hardware CC >=9.0,<10.0
+- 10.0 which supports hardware CC >=10.0,<11.0 except {10.1}
+- 12.0 which supports hardware CC >=12.0,<13.0
+Please follow the instructions at https://pytorch.org/get-started/locally/ to install a PyTorch release that supports one of these CUDA versions: 12.6
+  _warn_unsupported_code(d, device_cc, code_ccs)
+/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/cuda/__init__.py:489: UserWarning: 
+Tesla P100-PCIE-16GB with CUDA capability sm_60 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_75 sm_80 sm_86 sm_90 sm_100 sm_120.
+If you want to use the Tesla P100-PCIE-16GB GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+
+  queued_call()
+device=cuda model=ViT-B-32 pretrained=laion2b_s34b_b79k templates=18
+Traceback (most recent call last):
+  File "/home/infres/tpalagi-24/recvis26_a3/clip_zeroshot.py", line 127, in <module>
+    main()
+  File "/home/infres/tpalagi-24/recvis26_a3/clip_zeroshot.py", line 99, in main
+    classifier = build_classifier(model, tokenizer, templates, device)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/recvis26_a3/clip_zeroshot.py", line 67, in build_classifier
+    emb = model.encode_text(tokens)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/open_clip/model.py", line 509, in encode_text
+    return self._encode_text(text, normalize=normalize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/open_clip/model.py", line 494, in _encode_text
+    x = self.token_embedding(text).to(cast_dtype)  # [batch_size, n_ctx, d_model]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/nn/modules/sparse.py", line 189, in forward
+    return F.embedding(
+           ^^^^^^^^^^^^
+  File "/home/infres/tpalagi-24/.local/lib/python3.12/site-packages/torch/nn/functional.py", line 2567, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: no kernel image is available for execution on the device
+Search for `cudaErrorNoKernelImageForDevice' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

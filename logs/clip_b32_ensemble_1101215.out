@@ -1,0 +1,21 @@
+host=node16 job=1101215 start=Wed Nov 11 13:51:10 CET 2026
+Tesla P100-PCIE-16GB, 16384 MiB
+torch 2.14.1+cu126 /home/infres/tpalagi-24/recvis26_a3/.venv/lib64/python3.12/site-packages/torch/__init__.py
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+device=cuda model=ViT-B-32 pretrained=laion2b_s34b_b79k templates=18
+CIFAR-10 validation accuracy: 0.9369
+predicted class distribution on test:
+  airplane      5161  (10.1%)
+  automobile    4898  (9.6%)
+  bird          4742  (9.3%)
+  cat           4823  (9.4%)
+  deer          5043  (9.9%)
+  dog           5466  (10.7%)
+  frog          5185  (10.2%)
+  horse         4969  (9.7%)
+  ship          5161  (10.1%)
+  truck         5629  (11.0%)
+saved runs/clip_b32_ensemble/submission.csv
+saved runs/clip_b32_ensemble/test_logits.npy
+end=Wed Nov 11 13:53:34 CET 2026

@@ -10,3 +10,5 @@ train.npz
 validation.npz
 test.npz
 /data/
+.venv_old/
+/runs/

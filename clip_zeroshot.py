@@ -45,6 +45,46 @@ ENSEMBLE_TEMPLATES = (
 )
 SIMPLE_TEMPLATES = ("a photo of a {}.",)
 
+# The 18 CIFAR-10 templates published with CLIP (Radford et al., 2021,
+# github.com/openai/CLIP, data/prompts.md). Chosen without any knowledge of
+# this competition's test domain.
+OPENAI_CIFAR10_TEMPLATES = (
+    "a photo of a {}.",
+    "a blurry photo of a {}.",
+    "a black and white photo of a {}.",
+    "a low contrast photo of a {}.",
+    "a high contrast photo of a {}.",
+    "a bad photo of a {}.",
+    "a good photo of a {}.",
+    "a photo of a small {}.",
+    "a photo of a big {}.",
+    "a photo of the {}.",
+    "a blurry photo of the {}.",
+    "a black and white photo of the {}.",
+    "a low contrast photo of the {}.",
+    "a high contrast photo of the {}.",
+    "a bad photo of the {}.",
+    "a good photo of the {}.",
+    "a photo of the small {}.",
+    "a photo of the big {}.",
+)
+
+
+def get_templates(name: str) -> tuple[str, ...]:
+    if name == "simple":
+        return SIMPLE_TEMPLATES
+    if name == "ensemble":
+        return ENSEMBLE_TEMPLATES
+    if name == "openai_cifar10":
+        return OPENAI_CIFAR10_TEMPLATES
+    if name == "openai_imagenet":
+        # The 80 ImageNet templates from the CLIP paper, shipped with open_clip
+        # as lambdas. Calling them with "{}" turns them back into format strings.
+        from open_clip import OPENAI_IMAGENET_TEMPLATES
+
+        return tuple(template("{}") for template in OPENAI_IMAGENET_TEMPLATES)
+    raise ValueError(f"Unknown prompt set: {name}")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -52,7 +92,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", default="ViT-B-32")
     parser.add_argument("--pretrained", default="laion2b_s34b_b79k")
-    parser.add_argument("--prompts", choices=("simple", "ensemble"), default="ensemble")
+    parser.add_argument(
+        "--prompts",
+        choices=("simple", "ensemble", "openai_cifar10", "openai_imagenet"),
+        default="ensemble",
+        help="simple: 1 prompt | ensemble: 18 domain-inspired prompts | "
+        "openai_cifar10: 18 CLIP-paper CIFAR-10 prompts | openai_imagenet: 80 CLIP-paper ImageNet prompts",
+    )
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--workers", type=int, default=4)
     return parser.parse_args()
@@ -93,8 +139,11 @@ def main() -> None:
     model, _, preprocess = open_clip.create_model_and_transforms(args.model, pretrained=args.pretrained)
     model.to(device).eval()
     tokenizer = open_clip.get_tokenizer(args.model)
-    templates = ENSEMBLE_TEMPLATES if args.prompts == "ensemble" else SIMPLE_TEMPLATES
-    print(f"device={device} model={args.model} pretrained={args.pretrained} templates={len(templates)}")
+    templates = get_templates(args.prompts)
+    print(
+        f"device={device} model={args.model} pretrained={args.pretrained} "
+        f"prompts={args.prompts} templates={len(templates)}"
+    )
 
     classifier = build_classifier(model, tokenizer, templates, device)
 
