@@ -12,3 +12,5 @@ test.npz
 /data/
 .venv_old/
 /runs/
+/logs/
+/features/
