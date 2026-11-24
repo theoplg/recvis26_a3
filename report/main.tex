@@ -1,0 +1,106 @@
+% RecVis 2026 - Assignment 3 report (CVPR 2024 template)
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\input{preamble}
+\usepackage{booktabs}
+\usepackage{multirow}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[breaklinks,colorlinks,citecolor=cvprblue]{hyperref}
+
+\def\paperID{A3}
+\def\confName{RecVis}
+\def\confYear{2026}
+
+\title{Shifted Synthetic CIFAR-10 with Web-Scale Vision-Language Models}
+\author{Th\'eo Palagi \quad MVA, ENS Paris-Saclay}
+
+\begin{document}
+\maketitle
+
+\section{Problem and key observation}
+The ResNet-18 baseline reaches 88.4\% on CIFAR-10 validation but \textbf{46.7\%} on the Kaggle test.
+Test images are toys, sketches, paintings, 3D renders and pixel art, a shift similar to ImageNet-R~\cite{hendrycks2021many}.
+CNNs trained on photos rely on texture rather than shape~\cite{geirhos2019imagenet}, which renditions break, and 50k CIFAR photos cannot teach these styles.
+We therefore rely on vision-language models pretrained on billions of web image-text pairs, which contain such renditions.
+We report separately the \emph{inductive} setting (each test image alone) and the \emph{transductive} one (all unlabeled test images).
+
+\begin{table}[!t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+& Method & Val & Kaggle \\
+\midrule
+\multirow{6}{*}{\rotatebox{90}{Inductive}}
+& ResNet-18 baseline & 88.4 & 46.7 \\
+& CLIP B/32 zero-shot & 93.6 & 89.6 \\
+& CLIP L/14 zero-shot$^\dagger$ & 97.0 & 91.9 \\
+& CLIP bigG/14 zero-shot & 98.4 & 94.4 \\
+& \quad + CIFAR linear probe (WiSE) & 99.1 & 93.5 \\
+& Ensemble bigG + DFN + SigLIP2 & 99.0 & \textbf{95.2} \\
+\midrule
+\multirow{6}{*}{\rotatebox{90}{Transductive}}
+& bigG + rebalancing & 98.4 & 94.9 \\
+& bigG + head pseudo-labels + kNN + rebal. & 98.3 & 95.3 \\
+& Ensemble (3) + kNN + rebalancing & 99.0 & 96.4 \\
+& Student ViT-L/14 + kNN + rebal. & 95.3 & 97.1 \\
+& Student ViT-H/14, strong aug. & 96.0 & 98.0 \\
+& Ensemble of 3 ViT-H students & 95.0 & \textbf{98.2} \\
+\bottomrule
+\end{tabular}
+\caption{Accuracy (\%) on CIFAR-10 validation and public Kaggle test. $^\dagger$Templates written after viewing test images.}
+\label{tab:results}
+\end{table}
+
+\section{Inductive approach}
+\textbf{Zero-shot CLIP.}
+Each class vector is the normalized mean of the text embeddings of the class name in prompt templates, and an image goes to the most similar class~\cite{radford2021learning}.
+Nothing is fit on CIFAR, which keeps the robustness of pretraining.
+
+\textbf{Prompts.}
+We use the 80 ImageNet templates of~\cite{radford2021learning}, fixed a priori.
+Four prompt sets, including one we wrote after viewing test images, lie within 0.4 points with B/32, so prompts are not a lever and we keep the unbiased choice.
+
+\textbf{Scaling and pretraining data.}
+Test accuracy grows with model size: 89.6 (B/32), 91.9 (L/14), 94.4\% (bigG/14~\cite{cherti2023reproducible}).
+Data matter as much: ViT-H/14 DFN-5B~\cite{fang2023data} beats bigG on validation (98.9 vs 98.4\%) but not on the test (93.4\%).
+Validation thus ranks models within a family but not across families.
+
+\textbf{Ensemble.}
+bigG (LAION-2B), ViT-H DFN-5B and SigLIP~2 SO400M (WebLI)~\cite{tschannen2025siglip} agree pairwise on only $\approx$93.5\% of test images, so their errors are complementary.
+Averaging their probabilities per image gives our best inductive result, \textbf{95.2\%}.
+
+\textbf{Why not train on CIFAR?}
+A linear probe on frozen bigG features mixed with the zero-shot head (WiSE-FT~\cite{wortsman2022robust}) raises validation to 99.1\% but lowers the test by 0.9 points: fitting photos trades robustness for in-domain accuracy~\cite{kumar2022fine}.
+The training set is thus used for validation only.
+
+\section{Transductive setting}
+\textbf{Rebalancing and kNN.}
+All models over-predict \emph{truck} against \emph{automobile} (11.7 vs 8.7\% for the ensemble).
+Sinkhorn rebalancing~\cite{cuturi2013sinkhorn} to a uniform class distribution, assuming a balanced test, corrects part of it (+0.5).
+Averaging each prediction with its 10 nearest test neighbours exploits the cluster structure of the test domain (+0.5).
+
+\textbf{Naive pseudo-labelling fails.}
+Refitting the head on confident test predictions drifts towards one class (\emph{automobile} up to 15\%) and lowers accuracy, a confirmation bias.
+
+\textbf{Noisy-Student distillation.}
+Frozen features plateau at 96.4\% as all models share the remaining errors.
+We fine-tune a whole CLIP image encoder (student) on test images to match the soft predictions of the fixed ensemble (teacher)~\cite{xie2020self}, so its backbone learns test-domain features.
+A fixed teacher avoids the drift above, and strong augmentation keeps the student from copying the teacher's errors.
+A ViT-L/14 student already beats its teacher (97.1 vs 96.4\%).
+As in~\cite{beyer2022knowledge}, a bigger and more patient student helps most: ViT-H/14, 8 epochs, RandAugment~\cite{cubuk2020randaugment}, Mixup~\cite{zhang2018mixup} and CutMix~\cite{yun2019cutmix} with mixed targets, taught by the best previous model (98.0\%).
+Three ViT-H students (DFN, LAION-2B, MetaCLIP~\cite{xu2024demystifying}) reach \textbf{98.2\%}; they agree on 99\% of the test, so we stopped.
+Adding weaker models to a student always hurt.
+
+
+\textbf{External models and compute.}
+Only open-source OpenCLIP~\cite{cherti2023reproducible} checkpoints: B/32, L/14, bigG/14, H/14 (LAION-2B); H/14, H/14-378, L/14 (DFN); SigLIP2 SO400M-378 (WebLI); H/14 (MetaCLIP).
+No other data, proprietary model or test label was used.
+
+{
+\small
+\bibliographystyle{ieeenat_fullname}
+\bibliography{report}
+}
+\end{document}
