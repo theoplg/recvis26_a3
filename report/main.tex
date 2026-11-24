@@ -19,8 +19,7 @@
 
 \section{Problem and key observation}
 The ResNet-18 baseline reaches 88.4\% on CIFAR-10 validation but \textbf{46.7\%} on the Kaggle test.
-Test images are toys, sketches, paintings, 3D renders and pixel art, a shift similar to ImageNet-R~\cite{hendrycks2021many}.
-CNNs trained on photos rely on texture rather than shape~\cite{geirhos2019imagenet}, which renditions break, and 50k CIFAR photos cannot teach these styles.
+Test images are toys, sketches, paintings, 3D renders and pixel art, styles that 50k CIFAR photos cannot teach.
 We therefore rely on vision-language models pretrained on billions of web image-text pairs, which contain such renditions.
 We report separately the \emph{inductive} setting (each test image alone) and the \emph{transductive} one (all unlabeled test images).
 
@@ -72,7 +71,7 @@ bigG (LAION-2B), ViT-H DFN-5B and SigLIP~2 SO400M (WebLI)~\cite{tschannen2025sig
 Averaging their probabilities per image gives our best inductive result, \textbf{95.2\%}.
 
 \textbf{Why not train on CIFAR?}
-A linear probe on frozen bigG features mixed with the zero-shot head (WiSE-FT~\cite{wortsman2022robust}) raises validation to 99.1\% but lowers the test by 0.9 points: fitting photos trades robustness for in-domain accuracy~\cite{kumar2022fine}.
+A linear probe on frozen bigG features mixed with the zero-shot head (WiSE-FT~\cite{wortsman2022robust}) raises validation to 99.1\% but lowers the test by 0.9 points, since fitting photos trades robustness for in-domain accuracy.
 The training set is thus used for validation only.
 
 \section{Transductive setting}
@@ -89,7 +88,7 @@ Frozen features plateau at 96.4\% as all models share the remaining errors.
 We fine-tune a whole CLIP image encoder (student) on test images to match the soft predictions of the fixed ensemble (teacher)~\cite{xie2020self}, so its backbone learns test-domain features.
 A fixed teacher avoids the drift above, and strong augmentation keeps the student from copying the teacher's errors.
 A ViT-L/14 student already beats its teacher (97.1 vs 96.4\%).
-As in~\cite{beyer2022knowledge}, a bigger and more patient student helps most: ViT-H/14, 8 epochs, RandAugment~\cite{cubuk2020randaugment}, Mixup~\cite{zhang2018mixup} and CutMix~\cite{yun2019cutmix} with mixed targets, taught by the best previous model (98.0\%).
+The largest gain comes from a bigger and more patient student (ViT-H/14, 8 epochs, RandAugment~\cite{cubuk2020randaugment}, Mixup~\cite{zhang2018mixup} and CutMix~\cite{yun2019cutmix} with mixed targets) taught by the best previous model (98.0\%).
 Three ViT-H students (DFN, LAION-2B, MetaCLIP~\cite{xu2024demystifying}) reach \textbf{98.2\%}; they agree on 99\% of the test, so we stopped.
 Adding weaker models to a student always hurt.
 

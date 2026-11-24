@@ -1,16 +1,32 @@
+# Python
 __pycache__/
 .ipynb_checkpoints/
 .venv/
+.venv_old/
+
+# Competition data (Kaggle, not redistributable)
+/data/
+*.npz
+/sample_submission.csv
+
+# Experiment outputs
+/runs/
+/features/
+/logs/
 *.pth
 *.pt
 submission.csv
 history.csv
-runs/
-train.npz
-validation.npz
-test.npz
-/data/
-.venv_old/
-/runs/
-/logs/
-/features/
+
+# LaTeX build files (report/main.pdf is kept)
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.log
+report/*.out
+report/*.synctex.gz
+report/*.fls
+report/*.fdb_latexmk
+
+# Editor
+.vscode/
