@@ -3,6 +3,7 @@
 My solution to Assignment 3 of the [MVA RecVis](https://www.di.ens.fr/willow/teaching/recvis/) course (2026/2027). The training set is CIFAR-10 photos, and the model is evaluated on a **synthetic, distribution-shifted test domain** (toys, sketches, paintings, 3D renders, pixel art).
 
 **Result: 98.2% on the Kaggle test**, against 46.7% for the ResNet-18 baseline.
+I managed to rank **9th** out of more than **100 students of MVA** for this challenge which was given during a course.
 
 📄 Report: [report/main.pdf](report/main.pdf)
 
